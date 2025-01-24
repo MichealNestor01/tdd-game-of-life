@@ -26,6 +26,7 @@ class GameBoard:
         if self._is_inside_board(coordinate):
             self._board[coordinate.row][coordinate.col] = 1 if alive else 0
 
+    # returns true if alive, false if dead 
     def get_cell_state_at_pos(self, coordinate: Coordinate) -> bool:
         if self._is_inside_board(coordinate):
             return self._board[coordinate.row][coordinate.col] == 1
