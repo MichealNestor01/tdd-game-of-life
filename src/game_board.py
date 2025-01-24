@@ -5,6 +5,9 @@ class Coordinate:
     row: int
     col: int
 
+    def __add__(self, other):
+        return Coordinate(self.row+other.row, self.col+other.col)
+
 # game board is used to isolate the game functionality from the board and screen implementation
 # a future user interface can read the baord's state to udpate the interface, or inherit from this 
 class GameBoard:
@@ -15,6 +18,17 @@ class GameBoard:
         for live_cell in live_cells:
             if self._is_inside_board(live_cell):
                 self._set_cell_state(live_cell, True)
+
+    def __eq__(self, other: 'GameBoard') -> bool:
+        if self._rows != other._rows:
+            return False
+        if self._cols != other._cols:
+            return False
+        for row in range(self._rows):
+            for col in range(self._cols):
+                if self._board[row][col] != other._board[row][col]:
+                    return False
+        return True
 
     def _is_inside_board(self, coordinate: Coordinate) -> bool:
         return (coordinate.row < self._rows and
