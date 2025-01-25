@@ -12,10 +12,10 @@ def count_neighbours(board: GameBoard, pos: Pos) -> bool:
             count += 1
     return count
 
-def live_cell_survives_underpopulation(board: GameBoard, pos: Pos) -> bool:
+def cell_survives_underpopulation(board: GameBoard, pos: Pos) -> bool:
     return count_neighbours(board, pos) >= 2
 
-def live_cell_survives_overpopulation(board: GameBoard, pos: Pos) -> bool:
+def cell_survives_overpopulation(board: GameBoard, pos: Pos) -> bool:
     return count_neighbours(board, pos) <= 3
 
 def main():

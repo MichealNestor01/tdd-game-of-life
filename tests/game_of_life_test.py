@@ -3,7 +3,7 @@ import unittest
 import copy
 import itertools
 from src.game_board import GameBoard, Pos
-from src.game_of_life import live_cell_survives_underpopulation, live_cell_survives_overpopulation, count_neighbours
+from src.game_of_life import cell_survives_underpopulation, cell_survives_overpopulation, dead_cell_lives_by_reproduction, count_neighbours
 
 class TestGameOfLifeBase(unittest.TestCase):
     def setUp(self):
@@ -55,27 +55,27 @@ class TestCountNeighbours(TestGameOfLifeBase):
 
 class TestUnderpopulation(TestGameOfLifeBase):        
     def test_zero_neighbours(self):
-        self.assertFalse(live_cell_survives_underpopulation(self.board, self.target))
+        self.assertFalse(cell_survives_underpopulation(self.board, self.target))
 
     def test_one_neighbour_0(self):
         self._setNeighbours([Pos(-1, -1)])
-        self.assertFalse(live_cell_survives_underpopulation(self.board, self.target))
+        self.assertFalse(cell_survives_underpopulation(self.board, self.target))
 
     def test_two_neighbours_0_1(self):
         self._setNeighbours([Pos(-1, -1), Pos(-1, 0)])
-        self.assertTrue(live_cell_survives_underpopulation(self.board, self.target))
+        self.assertTrue(cell_survives_underpopulation(self.board, self.target))
 
     def test_two_neighbours_0_2(self):
         self._setNeighbours([Pos(-1, -1), Pos(-1, 1)])
-        self.assertTrue(live_cell_survives_underpopulation(self.board, self.target))
+        self.assertTrue(cell_survives_underpopulation(self.board, self.target))
 
     def test_two_neighbours_0_8(self):
         self._setNeighbours([Pos(-1, -1), Pos(1, 1)])
-        self.assertTrue(live_cell_survives_underpopulation(self.board, self.target))
+        self.assertTrue(cell_survives_underpopulation(self.board, self.target))
     
     def test_three_neighbours_0_1_7(self):
         self._setNeighbours([Pos(-1, -1), Pos(-1, 0), Pos(1, 0)])
-        self.assertTrue(live_cell_survives_underpopulation(self.board, self.target))
+        self.assertTrue(cell_survives_underpopulation(self.board, self.target))
 
     def test_catch_all(self):
         for neighbours_to_set_alive in self._getAllRelNeighbourPositionNeighbourCombinations():
@@ -83,25 +83,25 @@ class TestUnderpopulation(TestGameOfLifeBase):
             self.board._set_cell_state(self.target, True)
             self._setNeighbours(neighbours_to_set_alive)
             if len(neighbours_to_set_alive) >= 2:
-                self.assertTrue(live_cell_survives_underpopulation(self.board, self.target))
+                self.assertTrue(cell_survives_underpopulation(self.board, self.target))
             else:
-                self.assertFalse(live_cell_survives_underpopulation(self.board, self.target))
+                self.assertFalse(cell_survives_underpopulation(self.board, self.target))
 
 class TestOverpopulation(TestGameOfLifeBase):
     def test_zero_neighbours(self):
-        self.assertTrue(live_cell_survives_overpopulation(self.board, self.target))
+        self.assertTrue(cell_survives_overpopulation(self.board, self.target))
     
     def test_one_neighbour_0(self):
         self._setNeighbours([Pos(-1, -1)])
-        self.assertTrue(live_cell_survives_overpopulation(self.board, self.target))
+        self.assertTrue(cell_survives_overpopulation(self.board, self.target))
 
     def test_four_neighbours_0_1_2_3(self):
         self._setNeighbours([Pos(-1, -1), Pos(-1, 0), Pos(-1, 1), Pos(0, -1)])
-        self.assertFalse(live_cell_survives_overpopulation(self.board, self.target))
+        self.assertFalse(cell_survives_overpopulation(self.board, self.target))
 
     def test_five_neighbours_0_1_2_3(self):
         self._setNeighbours([Pos(-1, -1), Pos(-1, 0), Pos(-1, 1), Pos(0, -1), Pos(1, 1)])
-        self.assertFalse(live_cell_survives_overpopulation(self.board, self.target))
+        self.assertFalse(cell_survives_overpopulation(self.board, self.target))
 
     def test_catch_all(self):
         for neighbours_to_set_alive in self._getAllRelNeighbourPositionNeighbourCombinations():
@@ -109,6 +109,6 @@ class TestOverpopulation(TestGameOfLifeBase):
             self.board._set_cell_state(self.target, True)
             self._setNeighbours(neighbours_to_set_alive)
             if len(neighbours_to_set_alive) <= 3:
-                self.assertTrue(live_cell_survives_overpopulation(self.board, self.target))
+                self.assertTrue(cell_survives_overpopulation(self.board, self.target))
             else:
-                self.assertFalse(live_cell_survives_overpopulation(self.board, self.target))
+                self.assertFalse(cell_survives_overpopulation(self.board, self.target))
