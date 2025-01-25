@@ -1,4 +1,3 @@
-# fsww55838@gmail.com - github - @FunkeGoodVibe
 import unittest
 import copy
 import itertools
