@@ -49,6 +49,14 @@ class GameBoard:
     def clear(self) -> None:
         self._board = [[0 for _ in range(self._cols)] for _ in range(self._rows)]
     
+    def deepCopy(self) -> 'GameBoard':
+        live_cells: list[Pos] = []
+        for row in range(self._rows):
+            for col in range(self._cols):
+                if self._board[row][col] == 1:
+                    live_cells.append(Pos(row, col))
+        return GameBoard(self._rows, self._cols, live_cells)
+
     def print(self) -> None:
         print("GAME OF LIFE BOARD")
         for row in self._board:
