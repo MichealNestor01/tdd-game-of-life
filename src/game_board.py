@@ -17,7 +17,7 @@ class GameBoard:
         self._board = [[0 for _ in range(cols)] for _ in range(rows)]
         for live_cell in live_cells:
             if self._is_inside_board(live_cell):
-                self._set_cell_state(live_cell, True)
+                self.set_cell_state(live_cell, True)
 
     def __eq__(self, other: 'GameBoard') -> bool:
         if self._rows != other._rows:
@@ -36,10 +36,16 @@ class GameBoard:
                 Pos.col < self._cols and
                 Pos.col >= 0)
     
-    def _set_cell_state(self, Pos: Pos, alive: bool) -> None:
+    def set_cell_state(self, Pos: Pos, alive: bool) -> None:
         if self._is_inside_board(Pos):
             self._board[Pos.row][Pos.col] = 1 if alive else 0
 
+    def get_rows(self) -> int:
+        return self._rows
+    
+    def get_cols(self) -> int:
+        return self._cols
+    
     # returns true if alive, false if dead or off the board
     def get_cell_state_at_pos(self, Pos: Pos) -> bool:
         if self._is_inside_board(Pos):
