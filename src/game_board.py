@@ -45,6 +45,9 @@ class GameBoard:
         if self._is_inside_board(Pos):
             return self._board[Pos.row][Pos.col] == 1
         return False
+
+    def clear(self) -> None:
+        self._board = [[0 for _ in range(self._cols)] for _ in range(self._rows)]
     
     def print(self) -> None:
         print("GAME OF LIFE BOARD")

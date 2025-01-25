@@ -1,5 +1,7 @@
 # fsww55838@gmail.com - github - @FunkeGoodVibe
 import unittest
+import copy
+import itertools
 from src.game_board import GameBoard, Pos
 from src.game_of_life import cell_survives_underpopulation, count_neighbours
 
@@ -7,11 +9,23 @@ class TestGameOfLifeBase(unittest.TestCase):
     def setUp(self):
         self.target = Pos(1, 1)
         self.board = GameBoard(3, 3, [self.target])
-    
+        self.rel_neighbour_positions = [
+            Pos(-1, -1), Pos(-1, 0), Pos(-1, 1),
+            Pos(0, -1),              Pos(0, 1),
+            Pos(1, -1),  Pos(1, 0),  Pos(1, 1),
+        ]
+
     # neighbour positions are given relative to the target, eg above would be (-1, 0)
     def _setNeighbours(self, relative_neibours: list[Pos]) -> None:
         for neighbour in relative_neibours:
             self.board._set_cell_state(self.target+neighbour, True)
+    
+    def _getAllRelNeighbourPositionNeighbourCombinations(self) -> list[list[Pos]]:
+        combinations = []
+        for combination_length in range(len(self.rel_neighbour_positions)+1):
+            for neighbour_combination in itertools.combinations(self.rel_neighbour_positions, combination_length):
+                combinations.append(neighbour_combination)
+        return combinations
 
 class TestUnderpopulation(TestGameOfLifeBase):        
     def test_zero_neighbours(self):
@@ -37,6 +51,16 @@ class TestUnderpopulation(TestGameOfLifeBase):
         self._setNeighbours([Pos(-1, -1), Pos(-1, 0), Pos(1, 0)])
         self.assertTrue(cell_survives_underpopulation(self.board, self.target))
 
+    def test_catch_all(self):
+        for neighbours_to_set_alive in self._getAllRelNeighbourPositionNeighbourCombinations():
+            self.board.clear()
+            self.board._set_cell_state(self.target, True)
+            self._setNeighbours(neighbours_to_set_alive)
+            if len(neighbours_to_set_alive) >= 2:
+                self.assertTrue(cell_survives_underpopulation(self.board, self.target))
+            else:
+                self.assertFalse(cell_survives_underpopulation(self.board, self.target))
+
 class TestCountNeighbours(TestGameOfLifeBase):
     def test_zero_neighbours_dead_cell(self):
         # deactivate the target for this test
@@ -53,3 +77,11 @@ class TestCountNeighbours(TestGameOfLifeBase):
     def test_one_neighbours_0_1_live_cell(self):
         self._setNeighbours([Pos(-1, -1), Pos(-1, 0)])
         self.assertEqual(count_neighbours(self.board, self.target), 2)
+
+    def test_catch_all(self):
+        for neighbours_to_set_alive in self._getAllRelNeighbourPositionNeighbourCombinations():
+            self.board.clear()
+            self._setNeighbours(neighbours_to_set_alive)
+            self.assertEqual(count_neighbours(self.board, self.target), len(neighbours_to_set_alive), f"target dead, neighbours alive = {neighbours_to_set_alive}, board = {self.board._board}")
+            self.board._set_cell_state(self.target, True)
+            self.assertEqual(count_neighbours(self.board, self.target), len(neighbours_to_set_alive), f"target alive, neighbours alive  = {neighbours_to_set_alive}, board = {self.board._board}")
