@@ -18,6 +18,9 @@ def cell_survives_underpopulation(board: GameBoard, pos: Pos) -> bool:
 def cell_survives_overpopulation(board: GameBoard, pos: Pos) -> bool:
     return count_neighbours(board, pos) <= 3
 
+def cell_meets_reproduction_requirements(board: GameBoard, pos: Pos) -> bool:
+    return count_neighbours(board, pos) == 3
+
 def main():
     test_board = GameBoard(5, 5, [Pos(2, 2)])
     test_board.print()
