@@ -27,6 +27,31 @@ class TestGameOfLifeBase(unittest.TestCase):
                 combinations.append(neighbour_combination)
         return combinations
 
+class TestCountNeighbours(TestGameOfLifeBase):
+    def test_zero_neighbours_dead_cell(self):
+        # deactivate the target for this test
+        self.board._set_cell_state(self.target, False)
+        self.assertEqual(count_neighbours(self.board, self.target), 0)
+
+    def test_zero_neighbours_live_cell(self):
+        self.assertEqual(count_neighbours(self.board, self.target), 0)
+
+    def test_one_neighbours_0_live_cell(self):
+        self._setNeighbours([Pos(-1, -1)])
+        self.assertEqual(count_neighbours(self.board, self.target), 1)
+
+    def test_one_neighbours_0_1_live_cell(self):
+        self._setNeighbours([Pos(-1, -1), Pos(-1, 0)])
+        self.assertEqual(count_neighbours(self.board, self.target), 2)
+
+    def test_catch_all(self):
+        for neighbours_to_set_alive in self._getAllRelNeighbourPositionNeighbourCombinations():
+            self.board.clear()
+            self._setNeighbours(neighbours_to_set_alive)
+            self.assertEqual(count_neighbours(self.board, self.target), len(neighbours_to_set_alive), f"target dead, neighbours alive = {neighbours_to_set_alive}, board = {self.board._board}")
+            self.board._set_cell_state(self.target, True)
+            self.assertEqual(count_neighbours(self.board, self.target), len(neighbours_to_set_alive), f"target alive, neighbours alive  = {neighbours_to_set_alive}, board = {self.board._board}")
+
 class TestUnderpopulation(TestGameOfLifeBase):        
     def test_zero_neighbours(self):
         self.assertFalse(live_cell_survives_underpopulation(self.board, self.target))
@@ -61,27 +86,3 @@ class TestUnderpopulation(TestGameOfLifeBase):
             else:
                 self.assertFalse(live_cell_survives_underpopulation(self.board, self.target))
 
-class TestCountNeighbours(TestGameOfLifeBase):
-    def test_zero_neighbours_dead_cell(self):
-        # deactivate the target for this test
-        self.board._set_cell_state(self.target, False)
-        self.assertEqual(count_neighbours(self.board, self.target), 0)
-
-    def test_zero_neighbours_live_cell(self):
-        self.assertEqual(count_neighbours(self.board, self.target), 0)
-
-    def test_one_neighbours_0_live_cell(self):
-        self._setNeighbours([Pos(-1, -1)])
-        self.assertEqual(count_neighbours(self.board, self.target), 1)
-
-    def test_one_neighbours_0_1_live_cell(self):
-        self._setNeighbours([Pos(-1, -1), Pos(-1, 0)])
-        self.assertEqual(count_neighbours(self.board, self.target), 2)
-
-    def test_catch_all(self):
-        for neighbours_to_set_alive in self._getAllRelNeighbourPositionNeighbourCombinations():
-            self.board.clear()
-            self._setNeighbours(neighbours_to_set_alive)
-            self.assertEqual(count_neighbours(self.board, self.target), len(neighbours_to_set_alive), f"target dead, neighbours alive = {neighbours_to_set_alive}, board = {self.board._board}")
-            self.board._set_cell_state(self.target, True)
-            self.assertEqual(count_neighbours(self.board, self.target), len(neighbours_to_set_alive), f"target alive, neighbours alive  = {neighbours_to_set_alive}, board = {self.board._board}")
