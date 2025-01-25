@@ -45,10 +45,6 @@ class GameBoard:
         if self._is_inside_board(Pos):
             return self._board[Pos.row][Pos.col] == 1
         return False
-
-    def get_cell_state_at_pos(self, row: int, col: int) -> bool:
-        Pos = Pos(row, col)
-        return self.get_cell_state_at_pos(Pos)
     
     def print(self) -> None:
         print("GAME OF LIFE BOARD")

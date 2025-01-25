@@ -1,84 +1,55 @@
 # fsww55838@gmail.com - github - @FunkeGoodVibe
-
 import unittest
+from src.game_board import GameBoard, Pos
 from src.game_of_life import cell_survives_underpopulation, count_neighbours
 
-class TestUnderpopulation(unittest.TestCase):
+class TestGameOfLifeBase(unittest.TestCase):
+    def setUp(self):
+        self.target = Pos(1, 1)
+        self.board = GameBoard(3, 3, [self.target])
+    
+    # neighbour positions are given relative to the target, eg above would be (-1, 0)
+    def _setNeighbours(self, relative_neibours: list[Pos]) -> None:
+        for neighbour in relative_neibours:
+            self.board._set_cell_state(self.target+neighbour, True)
+
+class TestUnderpopulation(TestGameOfLifeBase):        
     def test_zero_neighbours(self):
-        test_screen = [
-            [0, 0, 0],
-            [0, 1, 0],
-            [0, 0, 0],
-        ]
-        target_is_alive = cell_survives_underpopulation(test_screen, 1, 1)
-        self.assertFalse(target_is_alive)
+        self.assertFalse(cell_survives_underpopulation(self.board, self.target))
 
     def test_one_neighbour_0(self):
-        test_screen = [
-            [1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 0],
-        ]
-        target_is_alive = cell_survives_underpopulation(test_screen, 1, 1)
-        self.assertFalse(target_is_alive)
+        self._setNeighbours([Pos(-1, -1)])
+        self.assertFalse(cell_survives_underpopulation(self.board, self.target))
 
     def test_two_neighbours_0_1(self):
-        test_screen = [
-            [1, 1, 0],
-            [0, 1, 0],
-            [0, 0, 0],
-        ]
-        target_is_alive = cell_survives_underpopulation(test_screen, 1, 1)
-        self.assertTrue(target_is_alive)
+        self._setNeighbours([Pos(-1, -1), Pos(-1, 0)])
+        self.assertTrue(cell_survives_underpopulation(self.board, self.target))
 
     def test_two_neighbours_0_2(self):
-        test_screen = [
-            [1, 0, 1],
-            [0, 1, 0],
-            [0, 0, 0],
-        ]
-        target_is_alive = cell_survives_underpopulation(test_screen, 1, 1)
-        self.assertTrue(target_is_alive)
+        self._setNeighbours([Pos(-1, -1), Pos(-1, 1)])
+        self.assertTrue(cell_survives_underpopulation(self.board, self.target))
 
     def test_two_neighbours_0_8(self):
-        test_screen = [
-            [1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 1],
-        ]
-        target_is_alive = cell_survives_underpopulation(test_screen, 1, 1)
-        self.assertTrue(target_is_alive)
+        self._setNeighbours([Pos(-1, -1), Pos(1, 1)])
+        self.assertTrue(cell_survives_underpopulation(self.board, self.target))
+    
+    def test_three_neighbours_0_1_7(self):
+        self._setNeighbours([Pos(-1, -1), Pos(-1, 0), Pos(1, 0)])
+        self.assertTrue(cell_survives_underpopulation(self.board, self.target))
 
-class TestCountNeighbours(unittest.TestCase):
+class TestCountNeighbours(TestGameOfLifeBase):
     def test_zero_neighbours_dead_cell(self):
-        test_screen = [
-            [0, 0, 0],
-            [0, 0, 0],
-            [0, 0, 0],
-        ]
-        self.assertTrue(count_neighbours(test_screen, 1, 1) == 0)
+        # deactivate the target for this test
+        self.board._set_cell_state(self.target, False)
+        self.assertEqual(count_neighbours(self.board, self.target), 0)
 
     def test_zero_neighbours_live_cell(self):
-        test_screen = [
-            [0, 0, 0],
-            [0, 1, 0],
-            [0, 0, 0],
-        ]
-        self.assertTrue(count_neighbours(test_screen, 1, 1) == 0)
+        self.assertEqual(count_neighbours(self.board, self.target), 0)
 
     def test_one_neighbours_0_live_cell(self):
-        test_screen = [
-            [1, 0, 0],
-            [0, 1, 0],
-            [0, 0, 0],
-        ]
-        self.assertTrue(count_neighbours(test_screen, 1, 1) == 1)
+        self._setNeighbours([Pos(-1, -1)])
+        self.assertEqual(count_neighbours(self.board, self.target), 1)
 
-
-    def test_one_neighbours_1_0_live_cell(self):
-        test_screen = [
-            [1, 1, 0],
-            [0, 1, 0],
-            [0, 0, 0],
-        ]
-        self.assertTrue(count_neighbours(test_screen, 1, 1) == 2)
+    def test_one_neighbours_0_1_live_cell(self):
+        self._setNeighbours([Pos(-1, -1), Pos(-1, 0)])
+        self.assertEqual(count_neighbours(self.board, self.target), 2)
