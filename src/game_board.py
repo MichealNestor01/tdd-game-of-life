@@ -40,7 +40,7 @@ class GameBoard:
         if self._is_inside_board(Pos):
             self._board[Pos.row][Pos.col] = 1 if alive else 0
 
-    # returns true if alive, false if dead 
+    # returns true if alive, false if dead or off the board
     def get_cell_state_at_pos(self, Pos: Pos) -> bool:
         if self._is_inside_board(Pos):
             return self._board[Pos.row][Pos.col] == 1
